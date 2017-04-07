@@ -5,14 +5,68 @@ output:
     keep_md: true
 ---
 
+library(plyr)
+library(ggplot2)
+library(scales)
 
 ## Loading and preprocessing the data
 
+if ( file.exists("./activity.zip") ) {
+    unzip("./activity.zip")
+}
 
+activity <- read.csv("./activity.csv", sep=",", head=TRUE)
+
+activity <- na.omit(activity)
+
+activity$date <- as.Date(activity$date , "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
+stepsbyday <- aggregate(activity$steps, list(activity$date), FUN=sum )
 
+#stepsbyday <- rename(stepsbyday, c("Group.1"="Date", "x"="Steps"))
+
+colnames(stepsbyday) <- c("Date", "Steps") 
+
+meanStepsPerDay <- mean(stepsbyday$Steps)
+
+medianStepsPerDay <- median(stepsbyday$Steps)
+
+#qplot(stepsbyday$Steps , geom="histogram") 
+
+
+#p <- ggplot(stepsbyday, 
+#            aes(x=Date, 
+#            y=Steps, 
+#            color=variable, 
+#            group = variable)) + 
+#     geom_point() + 
+#     geom_line() + 
+#     labs(x = "Year", 
+#          y = "PM2.5 (tons)", 
+#          title = "PM2.5 Baltimore per Year")
+          
+h <- ggplot(stepsbyday, aes(x=Date, y=Steps) ) +
+     scale_x_date(breaks=date_breaks(width="2 week")) + 
+     labs(x = "Day", 
+          y = "Steps", 
+          title = "Steps per day") +
+     geom_hline( aes( yintercept = meanStepsPerDay,
+                      fill = "Mean"),
+                 linetype=2,
+                 color="red",
+                 show_guide=TRUE) + 
+     geom_hline( aes ( yintercept = medianStepsPerDay,
+                       fill = "Median"),
+                 linetype=3,
+                 size=2,
+                 color="blue",
+                 show_guide=TRUE) +           
+     geom_histogram(stat="identity")
+       
+
+print(h)
 
 ## What is the average daily activity pattern?
 
