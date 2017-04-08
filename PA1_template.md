@@ -4,18 +4,31 @@
 
 ## Loading and preprocessing the data
 
+Libraries used:
+
 
 ```r
+library(data.table)
 library(plyr)
 library(ggplot2)
 library(scales)
+```
 
+Code for reading in the dataset and/or processing the data:
+
+
+```r
 if ( file.exists("./activity.zip") ) {
     unzip("./activity.zip")
 }
 
 activity <- read.csv("./activity.csv", sep=",", head=TRUE)
+```
 
+Conver dates to data class and remove missing values entries: 
+
+
+```r
 activity$date <- as.Date(activity$date , "%Y-%m-%d")
 
 activityNan <- na.omit(activity)
@@ -87,7 +100,31 @@ stepsbyInterval <- aggregate( activityNan$steps,
                               FUN=mean, na.rm=TRUE)
 
 colnames(stepsbyInterval) <- c("interval", "steps") 
+```
 
+The 5-minute interval that, on average, contains the maximum number of steps.
+
+
+```r
+maxSteps <- max(stepsbyInterval$steps)
+
+maxStepsInteval <- stepsbyInterval[ stepsbyInterval$steps == maxSteps, "interval"]
+```
+
+Interval with the maximum number of steps:
+  
+
+
+```r
+maxStepsInteval
+```
+
+```
+## [1] 835
+```
+
+
+```r
 p <- ggplot(stepsbyInterval, aes(x=interval, y=steps) ) +
      labs(x = "5 minutes intevals", 
           y = "Steps", 
@@ -98,7 +135,7 @@ p <- ggplot(stepsbyInterval, aes(x=interval, y=steps) ) +
 print(p)
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
 
 
 ## Imputing missing values
@@ -106,7 +143,18 @@ print(p)
 
 ```r
 mValues <- sum(is.na(activity$steps))
+```
 
+Missin values:
+
+'''{r}
+mValues
+```
+
+Funcion for fix missing entries:
+
+
+```r
 fillStepsByInterval <- function(s, i) { 
 
    if ( !is.na(s) ) 
@@ -119,7 +167,10 @@ fillStepsByInterval <- function(s, i) {
    return(value)    
 
 } 
+```
 
+
+```r
 activityFix <- activity
 activityFix$steps <- mapply(fillStepsByInterval, activityFix$steps, activityFix$interval)
 
@@ -131,6 +182,50 @@ meanStepsPerDayFix <- mean(stepsbydayFix$steps)
 
 medianStepsPerDayFix <- median(stepsbydayFix$steps)
 ```
+
+Mena and median with missing values fixed:
+
+Mean:
+
+
+```r
+meanStepsPerDayFix
+```
+
+```
+## [1] 10766.19
+```
+
+Median.
+
+'''{r}
+medianStepsPerDayFix
+```
+
+Histogram of the total number of steps taken each day after missing values are imputed:
+
+
+```r
+h <- ggplot(stepsbydayFix, aes(x=date, y=steps) ) +
+     scale_x_date(breaks=date_breaks(width="2 week")) + 
+     labs(x = "Day", 
+          y = "Steps", 
+          title = "Steps per day") +
+     geom_hline( yintercept = meanStepsPerDayFix, 
+                 linetype=2,
+                 color="red") + 
+     geom_hline( yintercept = medianStepsPerDayFix, 
+                 linetype=3,
+                 size=3,
+                 color="blue") +           
+     geom_histogram(stat="identity")
+       
+
+print(h)
+```
+
+![plot of chunk StepsbydayFix](figure/StepsbydayFix-1.png)
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -167,4 +262,4 @@ p <- ggplot(avrStepsByWdayAndWend, aes(x=interval, y=steps) ) +
 print(p)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png)
