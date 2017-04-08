@@ -1,15 +1,14 @@
 
 # Reproducible Research: Peer Assessment 1"
 
-```{r}
-library(plyr)
-library(ggplot2)
-library(scales)
-```
 
 ## Loading and preprocessing the data
 
 ```{r}
+library(plyr)
+library(ggplot2)
+library(scales)
+
 if ( file.exists("./activity.zip") ) {
     unzip("./activity.zip")
 }
@@ -31,7 +30,21 @@ colnames(stepsbyday) <- c("date", "steps")
 meanStepsPerDay <- mean(stepsbyday$steps)
 
 medianStepsPerDay <- median(stepsbyday$steps)
-          
+``` 
+
+Steps per day mean:
+
+```{r}
+meanStepsPerDay
+```
+
+Steps per day median:
+
+```{r}
+medianStepsPerDay
+```
+
+```{r Stepsbyday}         
 h <- ggplot(stepsbyday, aes(x=date, y=steps) ) +
      scale_x_date(breaks=date_breaks(width="2 week")) + 
      labs(x = "Day", 

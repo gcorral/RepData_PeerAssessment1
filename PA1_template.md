@@ -2,16 +2,14 @@
 # Reproducible Research: Peer Assessment 1"
 
 
-```r
-library(plyr)
-library(ggplot2)
-library(scales)
-```
-
 ## Loading and preprocessing the data
 
 
 ```r
+library(plyr)
+library(ggplot2)
+library(scales)
+
 if ( file.exists("./activity.zip") ) {
     unzip("./activity.zip")
 }
@@ -34,7 +32,32 @@ colnames(stepsbyday) <- c("date", "steps")
 meanStepsPerDay <- mean(stepsbyday$steps)
 
 medianStepsPerDay <- median(stepsbyday$steps)
-          
+```
+
+Steps per day mean:
+
+
+```r
+meanStepsPerDay
+```
+
+```
+## [1] 10766.19
+```
+
+Steps per day median:
+
+
+```r
+medianStepsPerDay
+```
+
+```
+## [1] 10765
+```
+
+
+```r
 h <- ggplot(stepsbyday, aes(x=date, y=steps) ) +
      scale_x_date(breaks=date_breaks(width="2 week")) + 
      labs(x = "Day", 
@@ -53,7 +76,7 @@ h <- ggplot(stepsbyday, aes(x=date, y=steps) ) +
 print(h)
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
+![plot of chunk Stepsbyday](figure/Stepsbyday-1.png)
 
 ## What is the average daily activity pattern?
 
@@ -75,7 +98,7 @@ p <- ggplot(stepsbyInterval, aes(x=interval, y=steps) ) +
 print(p)
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
 
 
 ## Imputing missing values
@@ -144,4 +167,4 @@ p <- ggplot(avrStepsByWdayAndWend, aes(x=interval, y=steps) ) +
 print(p)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
