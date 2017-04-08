@@ -1,16 +1,17 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
 
+# Reproducible Research: Peer Assessment 1"
+
+
+```r
 library(plyr)
 library(ggplot2)
 library(scales)
+```
 
 ## Loading and preprocessing the data
 
+
+```r
 if ( file.exists("./activity.zip") ) {
     unzip("./activity.zip")
 }
@@ -20,9 +21,12 @@ activity <- read.csv("./activity.csv", sep=",", head=TRUE)
 activity$date <- as.Date(activity$date , "%Y-%m-%d")
 
 activityNan <- na.omit(activity)
+```
 
 ## What is mean total number of steps taken per day?
 
+
+```r
 stepsbyday <- aggregate(activityNan$steps, list(activityNan$date), FUN=sum )
 
 colnames(stepsbyday) <- c("date", "steps") 
@@ -47,10 +51,14 @@ h <- ggplot(stepsbyday, aes(x=date, y=steps) ) +
        
 
 print(h)
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
 
 ## What is the average daily activity pattern?
 
 
+```r
 stepsbyInterval <- aggregate( activityNan$steps, 
                               list(activityNan$interval ),
                               FUN=mean, na.rm=TRUE)
@@ -65,11 +73,15 @@ p <- ggplot(stepsbyInterval, aes(x=interval, y=steps) ) +
        
 
 print(p)
+```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
 
 
 ## Imputing missing values
 
+
+```r
 mValues <- sum(is.na(activity$steps))
 
 fillStepsByInterval <- function(s, i) { 
@@ -95,11 +107,12 @@ colnames(stepsbydayFix) <- c("date", "steps")
 meanStepsPerDayFix <- mean(stepsbydayFix$steps)
 
 medianStepsPerDayFix <- median(stepsbydayFix$steps)
-
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 
+```r
 weekDayOrEnd <- function(d) { 
  
    weekdays_set <- c("Monday", "lunes", 
@@ -129,4 +142,6 @@ p <- ggplot(avrStepsByWdayAndWend, aes(x=interval, y=steps) ) +
        
 
 print(p)
+```
 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
